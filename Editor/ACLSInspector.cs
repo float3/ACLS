@@ -1134,7 +1134,8 @@ namespace ACLS
                     if (showAudioLink)
                     {
                         EditorGUI.indentLevel++;
-                        materialEditor.ShaderProperty(_UseAdvancedEmission, _UseAdvancedEmission.displayName);
+                        materialEditor.ShaderProperty(_UseAdvancedEmission, "SCSS Emission");
+                        EditorGUI.indentLevel++;
                         EditorGUI.indentLevel++;
                         materialEditor.ShaderProperty(_DetailEmissionMap, _DetailEmissionMap.displayName);
                         materialEditor.ShaderProperty(_DetailEmissionUVSec, _DetailEmissionUVSec.displayName);
@@ -1178,6 +1179,7 @@ namespace ACLS
                                 break;
                         }
 
+                        EditorGUI.indentLevel--;
                         EditorGUI.indentLevel--;
                         EditorGUI.indentLevel--;
                         EditorGUI.indentLevel--;

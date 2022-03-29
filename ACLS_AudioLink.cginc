@@ -197,7 +197,7 @@ float2 EmissionDetailTexCoords(float2 uv0, float2 uv1)
 
 #define sRGB_Luminance float3(0.2126, 0.7152, 0.0722)
 
-float3 addEmissive(float3 emissionIn, g2f i, float3 effectLighting, inout float3 color)
+void addEmissive(float3 emissionIn, g2f i, float3 effectLighting, inout float4 color)
 {
     #ifdef IS_OUTLINE
 	float isOutline = true;
@@ -208,7 +208,7 @@ float3 addEmissive(float3 emissionIn, g2f i, float3 effectLighting, inout float3
     float2 emissionDetailUV = EmissionDetailTexCoords(i.uv01, i.uv01);
     float4 emissionDetail = EmissionDetail(emissionDetailUV);
 
-    color = max(0, color - saturate((1 - emissionDetail.w) - (1 - emissionIn)));
+    color.rgb = max(0, color.rgb - saturate((1 - emissionDetail.w) - (1 - emissionIn)));
     emission = emissionDetail.rgb * emissionIn * _Emissive_Color.rgb;
 
     // Glow in the dark modifier.
@@ -219,7 +219,7 @@ float3 addEmissive(float3 emissionIn, g2f i, float3 effectLighting, inout float3
     #endif
 
     emission *= (1 - isOutline);
-    return emission;
+    color.rgb += emission;
 }
 
 // Get the ambient (L0) SH contribution correctly
