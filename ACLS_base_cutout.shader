@@ -3,11 +3,8 @@
 //// https://github.com/ACIIL/ACLS-Shader
 Shader "ACiiL/toon/ACLS_Toon_Cutout" {
     CGINCLUDE
-    #include "UnityCG.cginc"
-    #include "AutoLight.cginc"
-    #include "Lighting.cginc"
+   	#pragma skip_variants DYNAMICLIGHTMAP_ON LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING DIRLIGHTMAP_COMBINED SHADOWS_SHADOWMASK
     #define IsClip
-    #include "./ACLS_HELPERS.cginc"
     ENDCG
 
     Properties {
@@ -172,7 +169,38 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout" {
         // [ToggleUI] _emissiveUseMainTexCol("Emissive Use MainTex Color",Int) = 0
         _emissionUseMaskDiffuseDimming("_emissionUseMaskDiffuseDimming", Range(0,1)) = 0
         _emissionProportionalLum ("_emissionProportionalLum", Range(0, 2)) = 0
-
+        
+        // AudioLink
+        [Toggle(_EMISSION)]_UseAdvancedEmission("Enable Advanced Emission", Float ) = 0.0
+        [Enum(UV0, 0, UV1, 1)]_DetailEmissionUVSec("Detail Emission UV Source", Float) = 0
+		[Enum(ACLS.DetailEmissionMode)]_EmissionDetailType("Emission Detail Type", Float) = 0
+		_DetailEmissionMap("Detail Emission Map", 2D) = "white" {}
+		
+        [HDR]_EmissionDetailParams("Emission Detail Params", Vector) = (0,0,0,0)
+        
+        _alColorR("Red Channel Tint", Color) = (1, 0.333, 0, 0)
+        _alColorG("Green Channel Tint", Color) = (0, 1, 0.333, 0)
+        _alColorB("Blue Channel Tint", Color) = (0.33, 0, 1, 0)
+        _alColorA("Alpha Channel Tint", Color) = (0.333, 0.333, 0.333, 0)
+        [IntRange]_alBandR("Red Channel Band", Range(0, 4)) = 1
+        [IntRange]_alBandG("Green Channel Band", Range(0, 4)) = 2
+        [IntRange]_alBandB("Blue Channel Band", Range(0, 4)) = 3
+        [IntRange]_alBandA("Alpha Channel Band", Range(0, 4)) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeR("AudioLink Mode", Float) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeG("AudioLink Mode", Float) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeB("AudioLink Mode", Float) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeA("AudioLink Mode", Float) = 0
+        [Gamma]_alTimeRangeR("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Gamma]_alTimeRangeG("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Gamma]_alTimeRangeB("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Gamma]_alTimeRangeA("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Enum(Disable, 0, Enable, 1, Force on, 2)]_alUseFallback("Enable fallback", Float) = 1
+        _alFallbackBPM("Fallback BPM", Float) = 160
+        [ToggleUI]_UseEmissiveLightSense ("Use Light-sensing Emission", Float) = 0.0
+		_EmissiveLightSenseStart("Light Threshold Start", Range(0, 1)) = 1.0
+		_EmissiveLightSenseEnd("Light Threshold End", Range(0, 1)) = 0.0
+        // AudioLink
+        
         // [Header(Lighting Behaviour)]
         _directLightIntensity("Direct light intensity",Range(0,1)) = 1
         _indirectAlbedoMaxAveScale("Indirect albedo maxAve Scale",Range(0.5,2)) = 1.5
@@ -248,7 +276,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout" {
 
 
 
-
+  
 
 
     SubShader {
@@ -284,7 +312,10 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout" {
             #pragma multi_compile_fwdbase
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #pragma multi_compile UNITY_PASS_FORWARDBASE
+            #pragma shader_feature _ _EMISSION
+            #ifndef UNITY_PASS_FORWARDBASE
+			#define UNITY_PASS_FORWARDBASE
+			#endif
             // #pragma multi_compile _ UNITY_HDR_ON
             #include "ACLS_CORE.cginc"
             ENDCG
@@ -301,6 +332,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout" {
             BlendOp[_BlendOp]
             Cull[_CullMode]
             ZWrite off
+            Fog { Color (0,0,0,0) }
 
             Stencil
             {
@@ -318,7 +350,9 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout" {
             #pragma multi_compile_fwdadd_fullshadows
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #pragma multi_compile UNITY_PASS_FORWARDADD
+            #ifndef UNITY_PASS_FORWARDADD
+            #define UNITY_PASS_FORWARDADD
+            #endif
             // #pragma multi_compile _ UNITY_HDR_ON
             #include "ACLS_CORE.cginc"
             ENDCG
@@ -341,10 +375,13 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout" {
             #pragma fragment frag
             #pragma multi_compile_shadowcaster
             #pragma multi_compile_instancing
+   			#pragma skip_variants FOG_LINEAR FOG_EXP FOG_EXP2
+            #ifndef UNITY_PASS_SHADOWCASTER
+			#define UNITY_PASS_SHADOWCASTER
+			#endif
             #include "ACLS_SHADOWCASTER.cginc"
             ENDCG
         }
     }
-    FallBack "Legacy Shaders/VertexLit"
-    CustomEditor "ACLSInspector"
+    CustomEditor "ACLS.ACLSInspector"
 }

@@ -1,20 +1,19 @@
 ﻿//// ACiiL
 //// Citations in readme and in source.
 //// https://github.com/ACIIL/ACLS-Shader
-Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
+Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline"
+{
     CGINCLUDE
-    #include "UnityCG.cginc"
-    #include "AutoLight.cginc"
-    #include "Lighting.cginc"
+	#pragma skip_variants DYNAMICLIGHTMAP_ON LIGHTMAP_ON LIGHTMAP_SHADOW_MIXING DIRLIGHTMAP_COMBINED SHADOWS_SHADOWMASK
     #define IsClip
     #define OutlinesContext
-    #include "./ACLS_HELPERS.cginc"
     ENDCG
 
-    Properties {
+    Properties
+    {
         [ShaderOptimizerLockButton] _ShaderOptimizerEnabled ("", Int) = 0
-        [Enum(OFF,0,FRONT,1,BACK,2)] _CullMode("Cull Mode", int)    = 2  //OFF/FRONT/BACK
-        [HDR] _backFaceColorTint("Backface Color Tint",Color)   = (1,1,1,1)
+        [Enum(OFF,0,FRONT,1,BACK,2)] _CullMode("Cull Mode", int) = 2 //OFF/FRONT/BACK
+        [HDR] _backFaceColorTint("Backface Color Tint",Color) = (1,1,1,1)
 
         // [Header(Toon ramp)]
         _MainTex("Main Tex", 2D) = "white" {}
@@ -29,10 +28,10 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         [HDR] _0_ShadeColor("--Foward color", Color) = (0.97,0.97,0.97,1)
         [HDR] _1st_ShadeColor("--Core color", Color) = (0.94,0.94,0.94,1)
         [HDR] _2nd_ShadeColor("--Back color", Color) = (0.9,0.9,0.9,1)
-        _BaseColor_Step("Step: forward ", Range(0, 1))  = 0.6
-        _BaseShade_Feather("--Feather: forward", Range(0.0001, 1))  = 0.001
-        _ShadeColor_Step("Step: back", Range(0, 1))  = 0.4
-        _1st2nd_Shades_Feather("--Feather: back", Range(0.0001, 1))  = 0.001
+        _BaseColor_Step("Step: forward ", Range(0, 1)) = 0.6
+        _BaseShade_Feather("--Feather: forward", Range(0.0001, 1)) = 0.001
+        _ShadeColor_Step("Step: back", Range(0, 1)) = 0.4
+        _1st2nd_Shades_Feather("--Feather: back", Range(0.0001, 1)) = 0.001
         [Enum(All Light,0,Natural Indirect,1)] _ToonRampLightSourceType_Backwards("Toon ramp Backface light source type:",Int) = 0
         _diffuseIndirectDirectSimMix("Backward (In)Direct Mix", Range(0, 1)) = 0
         // _Set_SystemShadowsToBase("shadows mix core tone mix",Range(0,1)) = 0
@@ -56,40 +55,40 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         _controllerAlbedoHSVI_3("_controllerAlbedoHSVI_3", Float) = (0,0,0,1)
 
         // [Header(Specular Shine)]
-        [ToggleUI] _UseSpecularSystem("Use specular effects",Int)  = 0
+        [ToggleUI] _UseSpecularSystem("Use specular effects",Int) = 0
         [Enum(Specular,0,Metallic,1,Roughness,2)] _WorkflowMode("_WorkflowMode", Int ) = 0
         [Enum(Off,0,On,1)] _SpecOverride("_SpecOverride", Int ) = 0
         [Enum(On,0,Off,1)] _UseDiffuseEnergyConservation("Energy conservation", Int ) = 1
-        _SpecColor("Specular Primary Color",Color)    = (1,1,1,1)
-        _Glossiness("Smoothness",Range(0,1))    = .3
-        _Metallicness("_Metallicness",Range(0,1))    = 1
-        _HighColor_Tex("--Specular Setup Tex: (RGB):Tint, (A):Smoothness", 2D)  = "white" {}
-        _MetallicGlossMap("_MetallicGlossMap", 2D)  = "white" {}
-        _SpecGlossMap("_SpecGlossMap", 2D)          = "white" {}
-        _highColTexSource("----Multiply with albedo", Range(0,1))   = 0
+        _SpecColor("Specular Primary Color",Color) = (1,1,1,1)
+        _Glossiness("Smoothness",Range(0,1)) = .3
+        _Metallicness("_Metallicness",Range(0,1)) = 1
+        _HighColor_Tex("--Specular Setup Tex: (RGB):Tint, (A):Smoothness", 2D) = "white" {}
+        _MetallicGlossMap("_MetallicGlossMap", 2D) = "white" {}
+        _SpecGlossMap("_SpecGlossMap", 2D) = "white" {}
+        _highColTexSource("----Multiply with albedo", Range(0,1)) = 0
         _SpecularMaskHSV("--Adjest (H)ue (S)sat (V)alue (I)ntensity",Vector) = (0,0,0,1)
-        [HDR] _HighColor("Spec col 01", Color)  = (1,1,1,1)
-        [Enum(Sharp,0,Soft,1,Unity,2)] _Is_SpecularToHighColor("Specular mode", Int )   = 0
-        _TweakHighColorOnShadow("Spec shadow mask", Range(0, 1))    = 0.5
+        [HDR] _HighColor("Spec col 01", Color) = (1,1,1,1)
+        [Enum(Sharp,0,Soft,1,Unity,2)] _Is_SpecularToHighColor("Specular mode", Int ) = 0
+        _TweakHighColorOnShadow("Spec shadow mask", Range(0, 1)) = 0.5
 
         // [Header(Reflection)]
         [ToggleUI] _useCubeMap("_useCubeMap",Int) = 0
         [Enum(Off,0,Mask,1,Replace,2)] _GlossinessMapMode("_GlossinessMapMode",Int) = 0
         _GlossinessMap("_GlossinessMap",2D) = "white" {}
         [Enum(Standard,1,Override,2)] _ENVMmode("Reflection Setup:",Int) = 1
-        _ENVMix("--Reflection mix",Range(0,1))                                              = 1
-        _envRoughness("--Reflection smoothness", Range(0, 1))                               = 0.5
-        [Enum(Off,0,Smart,1,Always,2)] _CubemapFallbackMode("Fallback mix mode:",Int)      = 0
-        [NoScaleOffset] _CubemapFallback("--Fallback Cubemap",Cube)                         = "black" {}
+        _ENVMix("--Reflection mix",Range(0,1)) = 1
+        _envRoughness("--Reflection smoothness", Range(0, 1)) = 0.5
+        [Enum(Off,0,Smart,1,Always,2)] _CubemapFallbackMode("Fallback mix mode:",Int) = 0
+        [NoScaleOffset] _CubemapFallback("--Fallback Cubemap",Cube) = "black" {}
         // [Space(18)]
-        [Enum(Off,0,On,1)] _EnvGrazeMix("Graze Natural mix",Int)                            = 0
-        [Enum(Off,0,On,1)] _EnvGrazeRimMix("Graze RimLights Mask mix",Int)                  = 0
-        _envOnRim("Mask on rimLights", Range(0,1))                                          = 0.0
-        _envOnRimColorize("--Colorize rim lights", Range(0,1))                              = 1
+        [Enum(Off,0,On,1)] _EnvGrazeMix("Graze Natural mix",Int) = 0
+        [Enum(Off,0,On,1)] _EnvGrazeRimMix("Graze RimLights Mask mix",Int) = 0
+        _envOnRim("Mask on rimLights", Range(0,1)) = 0.0
+        _envOnRimColorize("--Colorize rim lights", Range(0,1)) = 1
         _rimLightLightsourceType("_rimLightLightsourceType", Range(0,1)) = 0
 
         // [Header(Rimlights)]
-        [ToggleUI] _useRimLightSystem("_useRimLightSystem",Int)  = 1
+        [ToggleUI] _useRimLightSystem("_useRimLightSystem",Int) = 1
         [Enum(Off,0,On,1)] _RimLight("RimLight blend",Int) = 1
         [Enum(Off,0,On,1)] _Add_Antipodean_RimLight("Ap RimLight blend",Int) = 1
         _rimAlbedoMix("Mix Albedo",Range(0,1)) = 0
@@ -103,7 +102,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         [ToggleUI] _LightDirection_MaskOn("Use light direction",Int) = 1
         _Tweak_LightDirection_MaskLevel("--Mask: Light direction",Range(0, 1)) = 0
         //
-        [Enum(Off,0,On,1)]	_useRimLightOverTone("_useRimLightOverTone", Int) = 0
+        [Enum(Off,0,On,1)] _useRimLightOverTone("_useRimLightOverTone", Int) = 0
         _rimLightOverToneLow("_rimLightOverToneLow",Range(0, 2)) = 0
         _rimLightOverToneHigh("_rimLightOverToneHigh",Range(0, 2)) = 1
         [HDR] _rimLightOverToneBlendColor1("_rimLightOverToneBlendColor1", Color) = (1,1,1,1)
@@ -127,7 +126,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         _Rotate_MatCapUV("Rotate matCap", Range(-1, 1)) = 0
         _Rotate_NormalMapForMatCapUV("Rotate normalMap matCap", Range(-1, 1)) = 0
         _TweakMatCapOnShadow("Specular shadow mask", Range(0, 1)) = 0
-        _Set_MatcapMask("Diffuse matcap mask (G)", 2D)  = "white" {}
+        _Set_MatcapMask("Diffuse matcap mask (G)", 2D) = "white" {}
         _Tweak_MatcapMaskLevel("--Tweak mask", Range(-1, 1)) = 0
         _McDiffAlbedoMix("MC diff albedo mix", Range(0,1)) = 0
         [Enum(Self,0,Smoothness,1)] _matcapSmoothnessSource0("_matcapSmoothnessSource0", Int) = 0
@@ -174,6 +173,37 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         _emissionUseMaskDiffuseDimming("_emissionUseMaskDiffuseDimming", Range(0,1)) = 0
         _emissionProportionalLum ("_emissionProportionalLum", Range(0, 2)) = 0
 
+        // AudioLink
+        [Toggle(_EMISSION)]_UseAdvancedEmission("Enable Advanced Emission", Float ) = 0.0
+        [Enum(UV0, 0, UV1, 1)]_DetailEmissionUVSec("Detail Emission UV Source", Float) = 0
+		[Enum(ACLS.DetailEmissionMode)]_EmissionDetailType("Emission Detail Type", Float) = 0
+		_DetailEmissionMap("Detail Emission Map", 2D) = "white" {}
+		
+        [HDR]_EmissionDetailParams("Emission Detail Params", Vector) = (0,0,0,0)
+        
+        _alColorR("Red Channel Tint", Color) = (1, 0.333, 0, 0)
+        _alColorG("Green Channel Tint", Color) = (0, 1, 0.333, 0)
+        _alColorB("Blue Channel Tint", Color) = (0.33, 0, 1, 0)
+        _alColorA("Alpha Channel Tint", Color) = (0.333, 0.333, 0.333, 0)
+        [IntRange]_alBandR("Red Channel Band", Range(0, 4)) = 1
+        [IntRange]_alBandG("Green Channel Band", Range(0, 4)) = 2
+        [IntRange]_alBandB("Blue Channel Band", Range(0, 4)) = 3
+        [IntRange]_alBandA("Alpha Channel Band", Range(0, 4)) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeR("AudioLink Mode", Float) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeG("AudioLink Mode", Float) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeB("AudioLink Mode", Float) = 0
+        [Enum(Pulse, 0, VU, 1)]_alModeA("AudioLink Mode", Float) = 0
+        [Gamma]_alTimeRangeR("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Gamma]_alTimeRangeG("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Gamma]_alTimeRangeB("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Gamma]_alTimeRangeA("Audio Link Time Range", Range(0, 1)) = 1.0
+        [Enum(Disable, 0, Enable, 1, Force on, 2)]_alUseFallback("Enable fallback", Float) = 1
+        _alFallbackBPM("Fallback BPM", Float) = 160
+        [ToggleUI]_UseEmissiveLightSense ("Use Light-sensing Emission", Float) = 0.0
+		_EmissiveLightSenseStart("Light Threshold Start", Range(0, 1)) = 1.0
+		_EmissiveLightSenseEnd("Light Threshold End", Range(0, 1)) = 0.0
+        // AudioLink
+
         // [Header(Lighting Behaviour)]
         _directLightIntensity("Direct light intensity",Range(0,1)) = 1
         _indirectAlbedoMaxAveScale("Indirect albedo maxAve Scale",Range(0.5,2)) = 1.5
@@ -182,7 +212,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         [Enum(HDR,0,Limit,1)] _forceLightClamp("Force scene Lights Clamp",Int) = 1
         [Enum(Real ADD,0,Safe MAX,4)] _BlendOp("Additional lights blending", Int) = 0
         _shadowCastMin_black("Dynamic Shadow Removal",Range(0.0,1.0)) = 0.65
-        [NoScaleOffset] _DynamicShadowMask("Dynamic Shadow mask",2D)         = "black" {}
+        [NoScaleOffset] _DynamicShadowMask("Dynamic Shadow mask",2D) = "black" {}
         [ToggleUI] _shadowUseCustomRampNDL("_shadowUseCustomRampNDL",Int) = 0
         _shadowNDLStep("_shadowNDLStep",Range(0,1)) = 1
         _shadowNDLFeather("_shadowNDLFeather",Range(0,1)) = 0.5
@@ -192,30 +222,30 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         _shadeShadowOffset2("_shadeShadowOffset2",Range(0,1)) = 0
 
         // [Header(Light Map Shift Masks)]
-        [Enum(Off,0,On,1,Use Vertex Color Red,2)] _UseLightMap("Light Map mode", Int)   = 0
-        _LightMap("Light map mask (G)", 2D)                                             = "linearGrey" {}
-        _lightMap_remapArr("--Range: (Z):LOW, (W):HIGH", Vector)                        = (-1,-1,0,1)
+        [Enum(Off,0,On,1,Use Vertex Color Red,2)] _UseLightMap("Light Map mode", Int) = 0
+        _LightMap("Light map mask (G)", 2D) = "linearGrey" {}
+        _lightMap_remapArr("--Range: (Z):LOW, (W):HIGH", Vector) = (-1,-1,0,1)
         // _lightMapCenter("--Mask pivot",Range(-0.5, 0.5))                             = 0
-        _toonLambAry_01("----forward regraph: (X)C1+(Y) | (Z)C2+(W)", Vector)           = (1.2, -0.1, -1, -1)
-        _toonLambAry_02("----back regraph: (X)C1+(Y) | (Z)C2+(W)", Vector)              = (2.0, 0.1, -1, -1)
-        [NoScaleOffset] _Set_1st_ShadePosition("Forward Toon Shadows (G)", 2D)          = "white" {}
-        [NoScaleOffset] _Set_2nd_ShadePosition("Backward Toon Shadow (G)", 2D)          = "white" {}
-        
+        _toonLambAry_01("----forward regraph: (X)C1+(Y) | (Z)C2+(W)", Vector) = (1.2, -0.1, -1, -1)
+        _toonLambAry_02("----back regraph: (X)C1+(Y) | (Z)C2+(W)", Vector) = (2.0, 0.1, -1, -1)
+        [NoScaleOffset] _Set_1st_ShadePosition("Forward Toon Shadows (G)", 2D) = "white" {}
+        [NoScaleOffset] _Set_2nd_ShadePosition("Backward Toon Shadow (G)", 2D) = "white" {}
+
         // [Header(Ambient Occlusion Maps)]
-        _Set_HighColorMask("Specular Mask (G)", 2D)                     = "white" {}
-        _Tweak_HighColorMaskLevel("--Tweak Mask", Range(-1, 1))         = 0
-        _Set_RimLightMask("RimLight Mask (G)", 2D)                      = "white" {}
-        _Tweak_RimLightMaskLevel("--Tweak Mask", Range(-1, 1))          = 0
+        _Set_HighColorMask("Specular Mask (G)", 2D) = "white" {}
+        _Tweak_HighColorMaskLevel("--Tweak Mask", Range(-1, 1)) = 0
+        _Set_RimLightMask("RimLight Mask (G)", 2D) = "white" {}
+        _Tweak_RimLightMaskLevel("--Tweak Mask", Range(-1, 1)) = 0
 
         // [Header(Normal map)]
-        [Normal] _NormalMap("NormalMap", 2D)                                 = "bump" {}
-        _DetailNormalMapScale01("--Detail scale", Range(0,1))       = 0
-        [Normal] _NormalMapDetail("----Detail Normal map", 2d)               = "bump" {}
-        _DetailNormalMask("----Detail Mask (G)", 2d)                = "white" {}
-        [ToggleUI] _Is_NormalMapToBase ("On Toon",Int)             = 1
-        [ToggleUI] _Is_NormalMapToHighColor("On High Color",Int)   = 1
-        [ToggleUI] _Is_NormalMapToRimLight("On Rims",Int)          = 1
-        [ToggleUI] _Is_NormaMapToEnv("On Reflection",Int)          = 1
+        [Normal] _NormalMap("NormalMap", 2D) = "bump" {}
+        _DetailNormalMapScale01("--Detail scale", Range(0,1)) = 0
+        [Normal] _NormalMapDetail("----Detail Normal map", 2d) = "bump" {}
+        _DetailNormalMask("----Detail Mask (G)", 2d) = "white" {}
+        [ToggleUI] _Is_NormalMapToBase ("On Toon",Int) = 1
+        [ToggleUI] _Is_NormalMapToHighColor("On High Color",Int) = 1
+        [ToggleUI] _Is_NormalMapToRimLight("On Rims",Int) = 1
+        [ToggleUI] _Is_NormaMapToEnv("On Reflection",Int) = 1
         // detail masks
         _DetailMap("_DetailMap",2D) = "linearGrey" {}
         _DetailMask("_DetailMask",2D) = "white" {}
@@ -231,11 +261,11 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         // [Header(Alpha mask)]
         // [Space(18)]
         // [Enum(Off,0,On,1)] _ZWrite("Z Write Depth sorting (Recommend off)",Int)     = 1
-        [Enum(Clipping Mask,0,Main Texture,1)] _IsBaseMapAlphaAsClippingMask("Alpha mask source",Int)   = 1
-        _ClippingMask("--Clipping mask (G)",2D)                                     = "white" {}
-        [ToggleUI] _Inverse_Clipping("Inverse clipping", Float )                   = 0
-        _Clipping_Level("Clipping level", Range(0, 1))                              = 0.5
-        _Tweak_transparency("--Tweak transparency", Range(-1, 1))                   = 0
+        [Enum(Clipping Mask,0,Main Texture,1)] _IsBaseMapAlphaAsClippingMask("Alpha mask source",Int) = 1
+        _ClippingMask("--Clipping mask (G)",2D) = "white" {}
+        [ToggleUI] _Inverse_Clipping("Inverse clipping", Float ) = 0
+        _Clipping_Level("Clipping level", Range(0, 1)) = 0.5
+        _Tweak_transparency("--Tweak transparency", Range(-1, 1)) = 0
         // outline
         [ToggleUI] _useOutline("_useOutline",Int) = 1
         [ToggleUI] _fillOutlineDepth("_fillOutlineDepth",Int) = 0
@@ -255,31 +285,35 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         _outlineEmissionMask("_outlineEmissionMask",2D) = "white" {}
         // [Space(18)]
         // [ToggleUI] _UseSpecAlpha("Use specular Alpha",Float)                       = 0
-        [ToggleUI] _DetachShadowClipping("Separate Shadow Clipping Level",Int)     = 0
-        _Clipping_Level_Shadow("--Shadow Clip", Range(0, 1))                        = 1
+        [ToggleUI] _DetachShadowClipping("Separate Shadow Clipping Level",Int) = 0
+        _Clipping_Level_Shadow("--Shadow Clip", Range(0, 1)) = 1
         // [Header(Stencil Helpers. Requires Queue Order Edits)]
-        _Stencil("Stencil ID [0;255]", Range(0,255))                                        = 0
-        [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("--Comparison", Int)     = 0
-        [Enum(UnityEngine.Rendering.StencilOp)] _StencilOp("--Pass", Int)                   = 0
-        [Enum(UnityEngine.Rendering.StencilOp)] _StencilFail("--Fail", Int)                 = 0
+        _Stencil("Stencil ID [0;255]", Range(0,255)) = 0
+        [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("--Comparison", Int) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilOp("--Pass", Int) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilFail("--Fail", Int) = 0
     }
 
 
 
+  
 
 
-
-    SubShader {
-        Tags {
+    SubShader
+    {
+        Tags
+        {
             "Queue"="AlphaTest"
             "RenderType"="TransparentCutout"
         }
 
 
 
-        Pass {
+        Pass
+        {
             Name "FORWARD"
-            Tags {
+            Tags
+            {
                 "LightMode"="ForwardBase"
             }
             Blend One Zero
@@ -293,7 +327,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
                 Pass [_StencilOp]
                 Fail [_StencilFail]
             }
-            
+
             CGPROGRAM
             #pragma target 5.0
             #pragma vertex vert
@@ -302,7 +336,10 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
             #pragma multi_compile_fwdbase
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #pragma multi_compile UNITY_PASS_FORWARDBASE
+            #pragma shader_feature _ _EMISSION
+            #ifndef UNITY_PASS_FORWARDBASE
+			#define UNITY_PASS_FORWARDBASE
+			#endif
             // #pragma multi_compile _ UNITY_HDR_ON
             #include "ACLS_CORE.cginc"
             ENDCG
@@ -310,15 +347,18 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
 
 
 
-        Pass {
+        Pass
+        {
             Name "FORWARD_DELTA"
-            Tags {
+            Tags
+            {
                 "LightMode"="ForwardAdd"
             }
             Blend One One
             BlendOp[_BlendOp]
             Cull[_CullMode]
             ZWrite off
+            Fog { Color (0,0,0,0) }
 
             Stencil
             {
@@ -327,7 +367,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
                 Pass [_StencilOp]
                 Fail [_StencilFail]
             }
-            
+
             CGPROGRAM
             #pragma target 5.0
             #pragma vertex vert
@@ -336,7 +376,9 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
             #pragma multi_compile_fwdadd_fullshadows
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #pragma multi_compile UNITY_PASS_FORWARDADD
+            #ifndef UNITY_PASS_FORWARDADD
+            #define UNITY_PASS_FORWARDADD
+            #endif
             // #pragma multi_compile _ UNITY_HDR_ON
             #include "ACLS_CORE.cginc"
             ENDCG
@@ -347,7 +389,10 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
         Pass
         {
             Name "Depthwrite"
-            Tags { "LightMode" = "Always" }
+            Tags
+            {
+                "LightMode" = "Always"
+            }
             Cull [_CullMode]
             // Cull [_CullMode]
             ColorMask 0
@@ -362,9 +407,11 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
 
 
 
-        Pass {
+        Pass
+        {
             Name "FORWARD_OUTLINE"
-            Tags {
+            Tags
+            {
                 "LightMode"="ForwardBase"
             }
             Blend One Zero
@@ -378,7 +425,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
                 Pass [_StencilOp]
                 Fail [_StencilFail]
             }
-            
+
             CGPROGRAM
             #pragma target 5.0
             #pragma vertex vert
@@ -386,23 +433,26 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
             #pragma multi_compile_fwdbase
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #pragma multi_compile UNITY_PASS_FORWARDBASE
             // #pragma multi_compile _ UNITY_HDR_ON
+            #define IS_OUTLINE
             #include "ACLS_OUTLINE.cginc"
             ENDCG
         }
 
 
 
-        Pass {
+        Pass
+        {
             Name "FORWARD_DELTA_OUTLINE"
-            Tags {
+            Tags
+            {
                 "LightMode"="ForwardAdd"
             }
             Blend One One
             BlendOp[_BlendOp]
             Cull Front
             ZWrite off
+            Fog { Color (0,0,0,0) }
 
             Stencil
             {
@@ -411,7 +461,7 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
                 Pass [_StencilOp]
                 Fail [_StencilFail]
             }
-            
+
             CGPROGRAM
             #pragma target 5.0
             #pragma vertex vert
@@ -419,33 +469,41 @@ Shader "ACiiL/toon/ACLS_Toon_Cutout_Outline" {
             #pragma multi_compile_fwdadd_fullshadows
             #pragma multi_compile_instancing
             #pragma multi_compile_fog
-            #pragma multi_compile UNITY_PASS_FORWARDADD
+            #ifndef UNITY_PASS_FORWARDADD
+            #define UNITY_PASS_FORWARDADD
+            #endif
             // #pragma multi_compile _ UNITY_HDR_ON
+            #define IS_OUTLINE
             #include "ACLS_OUTLINE.cginc"
             ENDCG
         }
 
 
 
-        Pass {
+        Pass
+        {
             Name "ShadowCaster"
-            Tags {
+            Tags
+            {
                 "LightMode"="ShadowCaster"
             }
             Offset 1 ,1
             Cull [_CullMode]
             ZWrite On ZTest LEqual
-            
+
             CGPROGRAM
             #pragma target 5.0
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_shadowcaster
             #pragma multi_compile_instancing
+   			#pragma skip_variants FOG_LINEAR FOG_EXP FOG_EXP2
+            #ifndef UNITY_PASS_SHADOWCASTER
+			#define UNITY_PASS_SHADOWCASTER
+			#endif
             #include "ACLS_SHADOWCASTER.cginc"
             ENDCG
         }
     }
-    FallBack "Legacy Shaders/VertexLit"
-    CustomEditor "ACLSInspector"
+    CustomEditor "ACLS.ACLSInspector"
 }
